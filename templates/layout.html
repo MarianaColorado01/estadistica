@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estadística - Intervalos y Pruebas</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <nav class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-4">
+      <div class="container mx-auto flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="bg-white/20 p-2 rounded-full">
+            <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M3 7h18M3 12h18M3 17h18" stroke-width="1.5" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-bold text-lg">Estadística </h1>
+            <p class="text-sm">Intervalos de confianza y pruebas de hipotesis</p>
+          </div>
+        </div>
+        <div>
+          <a href="/" class="bg-white text-indigo-600 px-3 py-1 rounded-md font-semibold">Inicio</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container mx-auto py-8 px-4">
+      {% block content %}{% endblock %}
+    </main>
+
+    
+  </body>
+</html>

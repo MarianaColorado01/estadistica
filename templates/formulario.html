@@ -1,0 +1,162 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-2xl shadow p-6">
+  <h2 class="text-2xl font-bold text-indigo-600">{{ case_title }}</h2>
+  <p class="mt-2 text-slate-600">Rellena los parámetros y presiona calcular.</p>
+
+  <form action="{{ url_for('compute', case_id=case_id) }}" method="post" class="mt-6 space-y-4">
+
+    {% if case_id == '1' %}
+      <!-- Proporción 1 -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Proporción muestral p̂ (ej. 0.3571)</label>
+        <input name="p" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Tamaño de muestra n</label>
+        <input name="n" type="number" min="1" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Nivel de confianza (%)</label>
+        <input name="conf" type="number" value="95" min="50" max="99.9" step="0.1" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+
+    {% elif case_id == '2' %}
+      <!-- Diferencia proporciones -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm">p1 (ej. 0.7273)</label>
+          <input name="p1" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+          <label class="block text-sm mt-2">n1</label>
+          <input name="n1" type="number" min="1" required class="mt-1 w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm">p2</label>
+          <input name="p2" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+          <label class="block text-sm mt-2">n2</label>
+          <input name="n2" type="number" min="1" required class="mt-1 w-full border rounded px-3 py-2" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm">Nivel de confianza (%)</label>
+        <input name="conf" type="number" value="95" min="50" max="99.9" step="0.1" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+
+    {% elif case_id == '3' %}
+      <!-- Prueba proporción -->
+      <div>
+        <label class="block text-sm">Proporción muestral p̂</label>
+        <input name="p_hat" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm">Proporción bajo H0 (p0)</label>
+        <input name="p0" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm">Tamaño de muestra n</label>
+        <input name="n" type="number" min="1" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm">Tipo de prueba</label>
+        <select name="alternative" class="mt-1 w-full border rounded px-3 py-2">
+          <option value="two-sided">Bilateral</option>
+          <option value="greater">Unilateral (>)</option>
+          <option value="less">Unilateral (<)</option>
+        </select>
+      </div>
+
+    {% elif case_id == '4' %}
+      <!-- Intervalo media -->
+      <div>
+        <label class="block text-sm">Media muestral x̄</label>
+        <input name="xbar" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm">Tamaño de muestra n</label>
+        <input name="n" type="number" min="2" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label> Desviación estándar muestral (s): </label>
+        <input type="number" step="0.001" name="s">
+      </div>
+      <div>
+        <label class="block text-sm">Desviación poblacional σ (si la conoces, opcional — si no, deja vacío para usar t)</label>
+        <input name="sigma" step="0.0001" class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm">Nivel de confianza (%)</label>
+        <input name="conf" type="number" value="95" min="50" max="99.9" step="0.1" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+
+    {% elif case_id == '5' %}
+      <div>
+          <label class="block font-semibold">Media muestral x̄</label>
+          <input type="number" step="0.0001" name="xbar" class="w-full border rounded px-2 py-1" required>
+      </div>
+
+      <div>
+          <label class="block mt-4 font-semibold">Tamaño de muestra n</label>
+          <input type="number" name="n" class="w-full border rounded px-2 py-1" required>
+      </div>
+
+      <div>
+          <label class="block mt-4 font-semibold">Valor bajo H0 (μ₀)</label>
+          <input type="number" step="0.0001" name="mu0" class="w-full border rounded px-2 py-1" required>
+      </div>
+
+      <div>
+          <label class="block mt-4 font-semibold">Desviación poblacional σ</label>
+          <input type="number" step="0.0001" name="sigma" class="w-full border rounded px-2 py-1" placeholder="Déjalo vacío si no la conoces">
+      </div>
+
+      <div>
+          <label class="block mt-4 font-semibold">Tipo de prueba</label>
+          <select name="alternative" class="w-full border rounded px-2 py-1" required>
+              <option value="two-sided">Bilateral (≠)</option>
+              <option value="greater">Cola derecha (&gt;)</option>
+              <option value="less">Cola izquierda (&lt;)</option>
+          </select>
+      </div>
+
+    {% elif case_id == '6' %}
+      <!-- Diferencia medias (Welch) -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm">x̄₁</label>
+          <input name="x1" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+          <label class="block text-sm mt-2">s₁ (desviación muestral)</label>
+          <input name="s1" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+          <label class="block text-sm mt-2">n₁</label>
+          <input name="n1" type="number" min="2" required class="mt-1 w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm">x̄₂</label>
+          <input name="x2" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+          <label class="block text-sm mt-2">s₂ (desviación muestral)</label>
+          <input name="s2" step="0.0001" required class="mt-1 w-full border rounded px-3 py-2" />
+          <label class="block text-sm mt-2">n₂</label>
+          <input name="n2" type="number" min="2" required class="mt-1 w-full border rounded px-3 py-2" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm">Nivel de confianza (%)</label>
+        <input name="conf" type="number" value="95" min="50" max="99.9" step="0.1" required class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm">Tipo de prueba</label>
+        <select name="alternative" class="mt-1 w-full border rounded px-3 py-2">
+          <option value="two-sided">Bilateral</option>
+          <option value="greater">Unilateral (μ₁ - μ₂ > 0)</option>
+          <option value="less">Unilateral (μ₁ - μ₂ < 0)</option>
+        </select>
+      </div>
+
+    {% endif %}
+
+    <div class="pt-4">
+      <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg font-semibold">Calcular</button>
+      <a href="{{ url_for('index') }}" class="ml-3 text-indigo-600">Volver</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

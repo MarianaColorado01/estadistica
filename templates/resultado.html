@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-2xl shadow p-6">
+  <h2 class="text-2xl font-bold text-indigo-600">{{ case_title }}</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
+
+
+
+    <!-- Tarjeta 1: Estimación puntual -->
+    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 shadow-sm">
+      <h3 class="text-indigo-700 font-semibold">Estimación puntual</h3>
+      {% if result.p %}
+        <p class="text-2xl font-bold mt-2">{{ "%.4f"|format(result.p) }}</p>
+      {% elif result.xbar %}
+        <p class="text-2xl font-bold mt-2">{{ "%.4f"|format(result.xbar) }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Tarjeta 2: Intervalo -->
+    <div class="bg-violet-50 border border-violet-200 rounded-xl p-4 shadow-sm">
+        
+        {% if result.lo is defined and result.hi is defined and result.margin is defined and result.conf is defined %}
+            
+            <h3 class="text-violet-700 font-semibold">
+                Intervalo ({{ (result.conf * 100)|round(1) }}%)
+            </h3>
+
+            <p class="mt-1 text-gray-700">
+                ({{ "%.4f"|format(result.lo) }} , {{ "%.4f"|format(result.hi) }})
+            </p>
+
+            <h4 class="text-violet-700 font-semibold mt-3">Margen de error</h4>
+            <p class="text-2xl font-bold mt-1">
+                {{ "%.4f"|format(result.margin) }}
+            </p>
+
+        {% else %}
+            <p class="text-gray-500">Este caso no tiene intervalo de confianza.</p>
+        {% endif %}
+
+    </div>
+
+    <!-- Tarjeta 3: Margen de error -->
+    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 shadow-sm">
+      <h3 class="text-emerald-700 font-semibold">Margen de Error</h3>
+
+      {% if result.margin is defined %}
+          <p class="text-2xl font-bold mt-2">{{ "%.4f"|format(result.margin) }}</p>
+      {% else %}
+          <p class="text-gray-500">Este caso no calcula margen de error.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- Interpretación -->
+  <div class="mt-6 bg-white border rounded-xl p-4 shadow-sm">
+
+    {% if result.lo is defined and result.hi is defined and result.conf is defined %}
+        <h3 class="font-semibold text-slate-700">Interpretación</h3>
+
+        <p class="mt-2 text-slate-600 leading-relaxed">
+          Con un nivel de confianza del {{ (result.conf * 100)|round(1) }}%, 
+          el parámetro verdadero se encuentra entre 
+          <strong>{{ "%.4f"|format(result.lo) }}</strong> y 
+          <strong>{{ "%.4f"|format(result.hi) }}</strong>.
+        </p>
+
+    {% else %}
+        <h3 class="font-semibold text-slate-700">Resultado de la prueba de hipótesis</h3>
+
+        <p class="whitespace-pre-line mt-3 text-slate-700">
+            {{ result.interpretacion }}
+        </p>
+
+        <p class="mt-3 font-bold text-indigo-700 text-lg">
+            Conclusión final: {{ result.decision }}
+        </p>
+    {% endif %}
+
+  </div>
+
+
+  {% if case_id == "5" %}
+  <div class="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm">
+
+      <h3 class="text-blue-700 font-semibold text-lg">Resultado de la prueba de hipótesis</h3>
+
+      <p class="mt-2 text-gray-800">
+          <strong>Estadístico ({{ result.method }}) :</strong>
+          {{ "%.4f"|format(result.stat) }}
+      </p>
+
+      <p class="mt-1 text-gray-800">
+          <strong>p-value:</strong>
+          {{ "%.6f"|format(result.p_value) }}
+      </p>
+
+      <p class="mt-1 text-gray-800">
+          <strong>Tipo de prueba:</strong>
+          {% if result.method == "z" %}
+              Z - Normal estandar
+          {% else %}
+              t - Student
+          {% endif %}
+      </p>
+
+      <hr class="my-3">
+
+      <!-- Conclusión automática -->
+      {% set alpha = 0.05 %}  {# O puedes cambiarlo si quieres permitir elegir alfa #}
+
+      <h4 class="text-blue-700 font-semibold">Conclusión final:</h4>
+
+      {% if result.p_value < alpha %}
+          <p class="text-green-700 font-bold mt-2">
+              ✔ Como p-value &lt; {{ alpha }}, se **rechaza H₀**.
+          </p>
+      {% else %}
+          <p class="text-red-700 font-bold mt-2">
+              ✘ Como p-value ≥ {{ alpha }}, **NO se rechaza H₀**.
+          </p>
+      {% endif %}
+  </div>
+  {% endif %}
+
+    {% if plotfile %}
+        <div class="mt-4">
+            <h3 class="font-semibold">Distribución</h3>
+            <img src="/{{ plotfile }}" alt="plot" class="mt-2 border rounded shadow" />
+        </div>
+    {% endif %}
+
+  <div class="mt-6">
+    <a href="{{ url_for('form_case', case_id=case_id) }}" class="bg-indigo-600 text-white px-4 py-2 rounded">Volver a parámetros</a>
+    <a href="{{ url_for('index') }}" class="ml-3 text-indigo-600">Inicio</a>
+  </div>
+</div>
+{% endblock %}
